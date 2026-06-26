@@ -1,2 +1,2 @@
-((c++-mode . ((c-file-style . "stroustrup"))))
-
+((c++-mode . ((c-file-style . "stroustrup")
+              (indent-tabs-mode . nil))))

@@ -44,61 +44,61 @@ namespace serial {
     };
 
     enum class byte_size : std::uint32_t {
-	five  = 5,
-	six   = 6,
-	seven = 7,
-	eight = 8
+        five  = 5,
+        six   = 6,
+        seven = 7,
+        eight = 8
     };
 
     enum class stop_bit : std::uint32_t {
-	one = 1,
-	two = 2
+        one = 1,
+        two = 2
     };
 
     enum class parity {
-	none,
-	odd,
-	even,
-	mark,
-	space
+        none,
+        odd,
+        even,
+        mark,
+        space
     };
 
     enum class flow_control {
-	none,
-	hardware,
-	software
+        none,
+        hardware,
+        software
     };
 
     struct port_opt {
-	std::string  device;
-	bit_rate     rate    = bit_rate::b9600;
-	byte_size    size    = byte_size::eight;
-	parity       parity  = parity::none;
-	stop_bit     stop    = stop_bit::one;
-	flow_control flow    = flow_control::none;
-	std::int16_t timeout = -1;
+        std::string  device;
+        bit_rate     rate    = bit_rate::b9600;
+        byte_size    size    = byte_size::eight;
+        parity       parity  = parity::none;
+        stop_bit     stop    = stop_bit::one;
+        flow_control flow    = flow_control::none;
+        std::int16_t timeout = -1;
     };
 
     class serial {
     public:
-	explicit serial(port_opt);
+        explicit serial(port_opt);
 
-	~serial();
+        ~serial();
 
-	serial(const serial&) = delete;
-	serial& operator=(const serial&) = delete;
+        serial(const serial&) = delete;
+        serial& operator=(const serial&) = delete;
 
-	void open();
-	void close();
+        void open();
+        void close();
 
-	// std::uint32_t write(std::vector<std::uint8_t>& data);
-	// std::uint32_t read(std::vector<std::uint8_t>& data);
+        // std::uint32_t write(std::vector<std::uint8_t>& data);
+        // std::uint32_t read(std::vector<std::uint8_t>& data);
 
     private:
-	int fd;
-	std::string device;
-	port_opt opt;
+        int fd;
+        std::string device;
+        port_opt opt;
 
-	void conf_port();
+        void conf_port();
     };
 }
