@@ -79,14 +79,14 @@ export namespace serial {
         std::int16_t timeout = -1;
     };
 
-    class serial {
+    class Serial {
     public:
-        explicit serial(port_opt);
+        explicit Serial(port_opt);
 
-        ~serial();
+        ~Serial();
 
-        serial(const serial&) = delete;
-        serial& operator=(const serial&) = delete;
+        Serial(const Serial&) = delete;
+        Serial& operator=(const Serial&) = delete;
 
         void open();
         void close();

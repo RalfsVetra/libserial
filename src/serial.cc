@@ -17,7 +17,7 @@ module;
 
 module serial;
 
-serial::serial::serial(port_opt opt) :
+serial::Serial::Serial(port_opt opt) :
     opt{std::move(opt)},
     fd{-1}
 {
@@ -25,11 +25,11 @@ serial::serial::serial(port_opt opt) :
         throw std::invalid_argument("Port path cannot be empty");
 }
 
-serial::serial::~serial() {
+serial::Serial::~Serial() {
     close();
 }
 
-void serial::serial::open()
+void serial::Serial::open()
 {
     fd = ::open(opt.port.c_str(), O_RDWR | O_NOCTTY);
 
@@ -41,7 +41,7 @@ void serial::serial::open()
     conf_port();
 }
 
-void serial::serial::close()
+void serial::Serial::close()
 {
     if (fd >= 0) [[likely]] {
         ::close(fd);
@@ -150,7 +150,7 @@ void set_timeout(termios& tty, const std::int16_t timeout_ms)
     }
 }
 
-void serial::serial::conf_port()
+void serial::Serial::conf_port()
 {
     struct termios tty;
 
@@ -179,7 +179,7 @@ void serial::serial::conf_port()
     }
 }
 
-std::uint32_t serial::serial::write(std::span<const std::uint8_t> data)
+std::uint32_t serial::Serial::write(std::span<const std::uint8_t> data)
 {
     if (data.empty())
         return 0;
@@ -193,7 +193,7 @@ std::uint32_t serial::serial::write(std::span<const std::uint8_t> data)
     return static_cast<std::uint32_t>(bytes_written);
 }
 
-std::uint32_t serial::serial::read(std::span<std::uint8_t> data)
+std::uint32_t serial::Serial::read(std::span<std::uint8_t> data)
 {
     if (data.empty())
         return 0;
