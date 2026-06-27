@@ -17,8 +17,8 @@ module;
 
 module serial;
 
-serial::Serial::Serial(port_opt opt) :
-    opt{std::move(opt)},
+serial::Serial::Serial(port_opt popt) :
+    opt{std::move(popt)},
     fd{-1}
 {
     if (opt.port.empty()) [[unlikely]]
