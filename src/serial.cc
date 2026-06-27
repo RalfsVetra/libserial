@@ -10,6 +10,7 @@ module;
 
 #include <cerrno>
 #include <cstdint>
+#include <span>
 #include <utility>
 #include <stdexcept>
 #include <system_error>
@@ -20,32 +21,32 @@ serial::serial::serial(port_opt opt) :
     opt{std::move(opt)},
     fd{-1}
 {
-    if (opt.device.empty()) [[unlikely]]
-        throw std::invalid_argument("Device path cannot be empty.");
+    if (opt.port.empty()) [[unlikely]]
+        throw std::invalid_argument("Port path cannot be empty");
 }
 
 serial::serial::~serial() {
     close();
 }
 
-void serial::serial::close()
-{
-    if (fd >= 0) {
-        ::close(fd);
-        fd = -1;
-    }
-}
-
 void serial::serial::open()
 {
-    fd = ::open(opt.device.c_str(), O_RDWR | O_NOCTTY);
+    fd = ::open(opt.port.c_str(), O_RDWR | O_NOCTTY);
 
     if (fd < 0) [[unlikely]] {
         throw std::system_error(errno, std::generic_category(),
-                                "Failed to open " + opt.device);
+                                "Failed to open " + opt.port);
     }
 
     conf_port();
+}
+
+void serial::serial::close()
+{
+    if (fd >= 0) [[likely]] {
+        ::close(fd);
+        fd = -1;
+    }
 }
 
 void set_byte_size(termios& tty, const serial::byte_size size)
@@ -68,26 +69,26 @@ void set_byte_size(termios& tty, const serial::byte_size size)
     }
 }
 
-void set_parity(termios& tty, const serial::parity parity)
+void set_parity_mode(termios& tty, const serial::parity_mode parity)
 {
     switch (parity) {
-    case serial::parity::none:
+    case serial::parity_mode::none:
         break;
-    case serial::parity::odd:
+    case serial::parity_mode::odd:
         tty.c_cflag |= (PARENB | PARODD);
         break;
-    case serial::parity::even:
+    case serial::parity_mode::even:
         tty.c_cflag |= PARENB;
         tty.c_cflag &= ~PARODD;
         break;
-    case serial::parity::mark:
+    case serial::parity_mode::mark:
 #ifdef CMSPAR
         tty.c_cflag |= (PARENB | CMSPAR | PARODD);
         break;
 #else
         throw std::invalid_argument("Mark parity is not supported");
 #endif
-    case serial::parity::space:
+    case serial::parity_mode::space:
 #ifdef CMSPAR
         tty.c_cflag |= (PARENB | CMSPAR);
         tty.c_cflag &= ~PARODD;
@@ -140,7 +141,7 @@ void set_timeout(termios& tty, const std::int16_t timeout_ms)
     if (timeout_ms > 0) {
         tty.c_cc[VMIN] = 0;
         tty.c_cc[VTIME] = static_cast<cc_t>((timeout_ms + 99) / 100);
-    } else if (timeout_ms < 0) {
+    } else if (timeout_ms < 0) [[likely]] {
         tty.c_cc[VMIN] = 1;
         tty.c_cc[VTIME] = 0;
     } else {
@@ -153,7 +154,7 @@ void serial::serial::conf_port()
 {
     struct termios tty;
 
-    if (::tcgetattr(fd, &tty) < 0) {
+    if (::tcgetattr(fd, &tty) < 0) [[unlikely]] {
         throw std::system_error(errno, std::generic_category(),
                                 "Failed to get port stats");
     }
@@ -167,13 +168,41 @@ void serial::serial::conf_port()
     }
 
     set_byte_size(tty, opt.size);
-    set_parity(tty, opt.parity);
+    set_parity_mode(tty, opt.parity);
     set_stop_bit(tty, opt.stop);
     set_flow_control(tty, opt.flow);
     set_timeout(tty, opt.timeout);
 
-    if (::tcsetattr(fd, TCSANOW, &tty) < 0) {
+    if (::tcsetattr(fd, TCSANOW, &tty) < 0) [[unlikely]] {
         throw std::system_error(errno, std::generic_category(),
                                 "Failed to set attributes");
     }
+}
+
+std::uint32_t serial::serial::write(std::span<const std::uint8_t> data)
+{
+    if (data.empty())
+        return 0;
+
+    ssize_t bytes_written = ::write(fd, data.data(), data.size());
+
+    if (bytes_written < 0) [[unlikely]]
+        throw std::system_error(errno, std::generic_category(),
+                                "Failed to write to serial port");
+
+    return static_cast<std::uint32_t>(bytes_written);
+}
+
+std::uint32_t serial::serial::read(std::span<std::uint8_t> data)
+{
+    if (data.empty())
+        return 0;
+
+    ssize_t bytes_read = ::read(fd, data.data(), data.size());
+
+    if (bytes_read < 0) [[unlikely]]
+        throw std::system_error(errno, std::generic_category(),
+                                "Failed to read from serial port");
+
+    return static_cast<std::uint32_t>(bytes_read);
 }
