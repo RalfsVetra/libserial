@@ -88,9 +88,6 @@ export namespace serial {
         Serial(const Serial&) = delete;
         Serial& operator=(const Serial&) = delete;
 
-        void open();
-        void close();
-
         std::uint32_t write(std::span<const std::uint8_t> data);
         std::uint32_t read(std::span<std::uint8_t> data);
 
@@ -98,6 +95,8 @@ export namespace serial {
         int fd;
         port_opt opt;
 
+        void open();
+        void close();
         void conf_port();
     };
 }

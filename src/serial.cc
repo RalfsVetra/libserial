@@ -23,6 +23,8 @@ serial::Serial::Serial(port_opt popt) :
 {
     if (opt.port.empty()) [[unlikely]]
         throw std::invalid_argument("Port path cannot be empty");
+
+    open();
 }
 
 serial::Serial::~Serial() {
