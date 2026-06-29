@@ -1,7 +1,6 @@
 add_library(serial)
 
 target_compile_features(serial PUBLIC cxx_std_20)
-set_target_properties(serial PROPERTIES CXX_EXTENSIONS OFF)
 
 target_sources(serial
   PRIVATE
@@ -9,4 +8,5 @@ target_sources(serial
   PUBLIC
     FILE_SET CXX_MODULES
     BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../include/serial.ccm)
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../include/serial.ccm
+)

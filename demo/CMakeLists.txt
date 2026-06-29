@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
-project(demo)
+project(demo CXX)
 
-add_executable(demo main.cc)
+add_executable(demo demo.cc)
 
 include(FetchContent)
 FetchContent_Declare(
