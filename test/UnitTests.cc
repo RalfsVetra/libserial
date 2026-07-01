@@ -14,7 +14,6 @@ protected:
   serial::Serial Port{
       {.Port{"/dev/ttyACM0"}, .Parity{serial::ParityMode::Odd}}};
 };
-} // namespace
 
 TEST_F(SerialTest, GetTimeout) { EXPECT_EQ(-1, Port.getTimeout()); }
 
@@ -32,3 +31,4 @@ TEST_F(SerialTest, SetTimeout) {
 //   std::array<std::uint8_t, 11> Buf{};
 //   EXPECT_EQ(11, Port.read(Buf));
 // }
+} // namespace
