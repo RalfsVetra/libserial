@@ -1,0 +1,87 @@
+// SPDX-FileCopyrightText: 2026 Ralfs K. Vētra
+//
+// SPDX-License-Identifier: MIT
+
+module;
+
+#include <cstdint>
+#include <span>
+#include <string>
+
+export module serial;
+
+export namespace serial {
+enum class BitRate {
+  BR0,
+  BR50,
+  BR75,
+  BR110,
+  BR134,
+  BR150,
+  BR200,
+  BR300,
+  BR600,
+  BR1200,
+  BR1800,
+  BR2400,
+  BR4800,
+  BR9600,
+  BR19200,
+  BR38400,
+  BR57600,
+  BR115200,
+  BR230400,
+  BR460800,
+  BR500000,
+  BR576000,
+  BR921600,
+  BR1000000,
+  BR1152000,
+  BR1500000,
+  BR2000000
+};
+
+enum class ByteSize : std::uint32_t { Five = 5, Six = 6, Seven = 7, Eight = 8 };
+
+enum class StopBit : std::uint32_t { One = 1, Two = 2 };
+
+enum class ParityMode { None, Odd, Even, Mark, Space };
+
+enum class FlowControl { None, Hardware, Software };
+
+struct PortOptions {
+  std::string Port;
+  BitRate Rate = BitRate::BR9600;
+  ByteSize Size = ByteSize::Eight;
+  ParityMode Parity = ParityMode::None;
+  StopBit Stop = StopBit::One;
+  FlowControl Flow = FlowControl::None;
+  std::int16_t Timeout = -1;
+};
+
+class Serial {
+public:
+  Serial(PortOptions);
+
+  ~Serial();
+
+  Serial(const Serial &) = delete;
+  Serial &operator=(const Serial &) = delete;
+  Serial(Serial &&) noexcept;
+  Serial &operator=(Serial &&) noexcept;
+
+  std::uint32_t write(std::span<const std::uint8_t>) const;
+  std::uint32_t read(std::span<std::uint8_t>);
+
+  std::int16_t getTimeout() const;
+  void setTimeout(std::int16_t);
+
+private:
+  int Fd;
+  PortOptions Options;
+
+  void openPort();
+  void closePort();
+  void configurePort();
+};
+} // namespace serial
