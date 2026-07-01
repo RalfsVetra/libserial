@@ -4,9 +4,9 @@ target_compile_features(serial PUBLIC cxx_std_20)
 
 target_sources(serial
   PRIVATE
-    serial.cc
+    Serial.cc
   PUBLIC
     FILE_SET CXX_MODULES
     BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../include/serial.ccm
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../include/Serial.ccm
 )
