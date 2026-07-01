@@ -11,19 +11,19 @@ import serial;
 using namespace serial;
 
 int main() {
-  Serial port({.port{"/dev/ttyACM0"},
-               .rate{bit_rate::b115200},
-               .parity{parity_mode::odd}});
+  Serial Port({.Port{"/dev/ttyACM0"},
+               .Rate{BitRate::BR115200},
+               .Parity{ParityMode::Odd}});
 
-  // const std::vector<std::uint8_t> buf(11, 0);
-  // const std::uint8_t buf[]{1, 2, 3};
-  const std::array<std::uint8_t, 3> buf{1, 2, 3};
-  auto bytes_written = port.write(buf);
+  // const std::vector<std::uint8_t> Buf(11, 0);
+  // const std::uint8_t Buf[11]{};
+  const std::array<std::uint8_t, 11> Buf{};
+  auto BytesWritten = Port.write(Buf);
 
-  // std::vector<std::uint8_t> buf(11, 0);
-  // std::uint8_t buf[64]{};
-  std::array<std::uint8_t, 11> buf{};
-  auto bytes_read = port.read(buf);
+  // std::vector<std::uint8_t> Buf(11, 0);
+  // std::uint8_t Buf[11]{};
+  std::array<std::uint8_t, 11> Buf{};
+  auto BytesRead = Port.read(Buf);
 }
 ```
 
